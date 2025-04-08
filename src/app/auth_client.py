@@ -1,6 +1,6 @@
 import requests
 import os
-import logger
+import app.logger as logger
 
 AUTH_HOST = os.environ.get('AUTH_HOST', 'localhost')
 AUTH_PORT = os.environ.get('AUTH_PORT', '3000')

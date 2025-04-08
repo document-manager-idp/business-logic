@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import request, jsonify, g
 from app.auth_client import get_userinfo
-import logger  # Replace with your actual custom logging library
+import app.logger as logger  # Replace with your actual custom logging library
 
 def auth_route(f):
     @wraps(f)
