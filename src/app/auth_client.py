@@ -12,7 +12,7 @@ def get_userinfo(token):
     headers = {
         'Authorization': f'Bearer {token}'
     }
-    url = build_url("auth/management/userinfo")
+    url = build_url("management/userinfo")
     logger.info("Sending request to get user info from %s", url)
     try:
         response = requests.get(url, headers=headers)
