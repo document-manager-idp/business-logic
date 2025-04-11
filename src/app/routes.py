@@ -9,6 +9,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/', methods=['GET'])
 def index():
+    
     html_content = """
     <!doctype html>
     <html lang="en">
@@ -47,8 +48,13 @@ def index():
         <input type="submit" value="Search">
       </form>
       <div id="search-message" class="message"></div>
+      <hr>
       
-      <!-- JavaScript to send the form data with the bearer token -->
+      <!-- Documents List -->
+      <h1>Documents List</h1>
+      <div id="documents-list">Loading documents...</div>
+      
+      <!-- JavaScript to handle form submissions and token authentication -->
       <script>
         async function submitForm(event, url) {
           event.preventDefault();  // Prevent normal form submission
@@ -93,6 +99,47 @@ def index():
             messageDiv.innerHTML = `<span class="error">Error: ${error}</span>`;
           }
         }
+        
+        // Function to load documents from the /get-documents route and display them in the DOM.
+        async function loadDocuments() {
+          const token = localStorage.getItem('cognitoToken');
+          
+          // Prepare headers with the Authorization header if token is provided.
+          const headers = new Headers();
+          if (token) {
+            headers.append('Authorization', 'Bearer ' + token);
+          }
+
+          try {
+            const response = await fetch('/api/get-documents', {headers: headers});
+            if (response.ok) {
+              const documents = await response.json();
+              const listContainer = document.getElementById('documents-list');
+              // Clear the container first
+              listContainer.innerHTML = "";
+              if (documents.length > 0) {
+                const ul = document.createElement('ul');
+                documents.forEach(doc => {
+                  const li = document.createElement('li');
+                  li.textContent = doc;
+                  ul.appendChild(li);
+                });
+                listContainer.appendChild(ul);
+              } else {
+                listContainer.innerHTML = "<p>No documents found.</p>";
+              }
+            } else {
+              console.error('Failed to fetch documents');
+              document.getElementById('documents-list').innerHTML = "<p>Error loading documents.</p>";
+            }
+          } catch (error) {
+            console.error('Error occurred while fetching documents:', error);
+            document.getElementById('documents-list').innerHTML = "<p>Error loading documents.</p>";
+          }
+        }
+        
+        // Load documents when the page has finished loading.
+        window.addEventListener('load', loadDocuments);
       </script>
     </body>
     </html>
@@ -119,7 +166,7 @@ def upload():
     # process and ingest document
     pdfProcessor = PdfProcessor(file_path, "")
     pdfProcessor.process()
-    content = pdfProcessor.format_data(id)
+    content = pdfProcessor.format_data(index_name=id)
 
     # delete file after processing
     os.remove(file_path)
@@ -153,3 +200,12 @@ def search():
     response = db_search(id, query)
 
     return jsonify({"content": response}), 200
+
+@main_bp.route('/get-documents', methods=['GET'])
+@auth_route
+def get_documents():
+    id = g.user.get('username', 'User')
+
+    response = db_get_documents(id)
+
+    return jsonify(response), 200

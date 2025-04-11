@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine3.21
 
 # Set environment variable to ensure Python output is sent straight to terminal
 ENV PYTHONUNBUFFERED=1

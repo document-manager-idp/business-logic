@@ -37,7 +37,7 @@ def db_delete(id: str, filename: str):
 
     return None
 
-def db_search(id:str, query: str):
+def db_search(id: str, query: str):
     url = build_url("db-service/search")
 
     body = {
@@ -50,5 +50,19 @@ def db_search(id:str, query: str):
     logger.info(response.status_code)
     if response:
         return response.json()
+
+    return None
+
+def db_get_documents(id: str):
+    url = build_url("db-service/get-documents")
+
+    body = {
+        "id": id,
+    }
+
+    response = requests.get(url, json=body)
+    if response:
+        response_json = response.json()
+        return response_json["documents"]
 
     return None
