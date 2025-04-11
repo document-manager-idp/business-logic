@@ -1,4 +1,4 @@
-FROM downloads.unstructured.io/unstructured-io/unstructured:latest
+FROM python:3.12-slim
 
 # Set environment variable to ensure Python output is sent straight to terminal
 ENV PYTHONUNBUFFERED=1
@@ -9,6 +9,9 @@ WORKDIR /app
 # Copy the requirements file and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 libgl1 -y  \
+    && apt-get clean
 
 # Copy the rest of the application code
 COPY . .
