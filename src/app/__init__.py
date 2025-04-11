@@ -15,6 +15,6 @@ def create_app(config_filename=None):
 
     # Import and register blueprint from routes
     from app.routes import main_bp
-    app.register_blueprint(main_bp, url_prefix=os.environ.get('PREFIX', '/'))
+    app.register_blueprint(main_bp, url_prefix=os.environ.get('PREFIX'))
 
     return app
