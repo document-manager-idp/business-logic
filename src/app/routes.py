@@ -25,7 +25,7 @@ def index():
     <body>
       <!-- File upload form -->
       <h1>Upload a PDF</h1>
-      <form onsubmit="submitForm(event, '/upload')" method="post" enctype="multipart/form-data">
+      <form onsubmit="submitForm(event, '/api/upload')" method="post" enctype="multipart/form-data">
         <input type="file" name="file" accept=".pdf">
         <input type="submit" value="Upload">
       </form>
@@ -34,7 +34,7 @@ def index():
       
       <!-- Delete file form -->
       <h1>Delete a PDF</h1>
-      <form onsubmit="submitForm(event, '/delete')" method="post">
+      <form onsubmit="submitForm(event, '/api/delete')" method="post">
         <input type="text" name="filename" placeholder="Enter filename" required>
         <input type="submit" value="Delete">
       </form>

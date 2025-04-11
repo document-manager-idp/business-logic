@@ -10,7 +10,7 @@ def build_url(endpoint):
     return f'http://{DB_HOST}:{DB_PORT}/{endpoint}'
 
 def db_upload(id, content):
-    url = build_url("db-service/delete")
+    url = build_url("db-service/upload")
 
     body = {
         "id": id,
