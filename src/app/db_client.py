@@ -9,10 +9,37 @@ DB_PORT = os.environ.get('DB_PORT', '5700')
 def build_url(endpoint):
     return f'http://{DB_HOST}:{DB_PORT}/{endpoint}'
 
-def db_search(query):
+def db_upload(id, content):
+    url = build_url("db-service/delete")
+
+    body = {
+        "id": id,
+        "content": content
+    }
+
+    response = requests.post(url, json=body)
+    if response:
+        return response.json()
+
+    return None
+
+def db_delete(id: str, filename: str):
+    url = build_url("db-service/delete")
+
+    body = {
+        "id": id,
+        "filename": filename
+    }
+
+    response = requests.get(url, json=body)
+    if response:
+        return response.json()
+
+    return None
+
+def db_search(id:str, query: str):
     url = build_url("db-service/search")
 
-    id = g.user.get('username', 'User')
     body = {
         "id": id,
         "query": query
