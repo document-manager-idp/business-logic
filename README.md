@@ -95,6 +95,6 @@ The workflow in `.github/workflows/build-and-push.yml`:
 
 1. Builds a multi‑arch image with Docker Buildx.
 
-2. Pushes the image to ghcr.io/\<owner>/\<repo>:\<SHA>.
+2. Pushes the image to ghcr.io.
 
 3. Opens the k8s‑infrastructure repo, patches the image tag in the deployment manifest, and pushes to main.
