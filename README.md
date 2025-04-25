@@ -6,8 +6,8 @@ It exposes a small REST/JSON API (and a simple HTML playground) guarded by an ex
 ---
 
 ## Key Features
-* **PDF ingestion & OCR** – powered by [unstructured‑io/unstructured] and PyMuPDF
-* **Language‑aware cleanup & sentence splitting** – spaCy `ro_core_news_lg`
+* **PDF ingestion & OCR** – powered by [unstructured‑io](https://unstructured.io/) and PyMuPDF
+* **Sentence segmentation** – spaCy `ro_core_news_lg`
 * **Chunking for embeddings** – Hugging Face `sentence‑transformers` tokenizer
 * **Endpoints**
     * `POST   /upload`         – upload & index a PDF
@@ -20,17 +20,17 @@ It exposes a small REST/JSON API (and a simple HTML playground) guarded by an ex
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 | Layer            | Libraries / Tools                                            |
 |------------------|--------------------------------------------------------------|
 | Web/API          | **Flask**, `python-dotenv`, `requests`                       |
-| Document parsing | **unstructured[pdf]**, **PyMuPDF**, **spaCy** (RO), **bs4**  |
+| Document parsing | **unstructured[pdf]**, **PyMuPDF**, **spaCy**, **bs4**  |
 | Embeddings       | **transformers** (MiniLM‑L12‑v2), **tabulate**               |
 | Logging          | Python `logging`                                             |
 | Runtime / Ops    | **Docker**, GitHub Actions, GHCR, Kubernetes‑ready manifests |
 
-Python ≥3.10 should be used.
+Python 3.12 was used.
 
 ---
 
@@ -39,7 +39,7 @@ Python ≥3.10 should be used.
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/your‑org/business‑logic.git
+git clone https://github.com/document-manager-idp/business-logic.git
 cd business‑logic
 python -m venv .venv && source .venv/bin/activate
 pip install --upgrade pip
@@ -50,19 +50,21 @@ pip install -r requirements.txt
 
 ```bash
 # .env (example)
-AUTH_HOST=auth-service       # host of your auth API
+AUTH_HOST=auth-service       # host of auth API
 AUTH_PORT=3000
-DB_HOST=db-service           # host of your doc‑store API
+DB_HOST=db-service           # host of db-service API
 DB_PORT=5700
 PREFIX=/api                  # route prefix for all JSON endpoints
 HOSTNAME=0.0.0.0
 PORT=5000
 ```
-
 (You can also pass them on the command line or keep them in an .env file.)
-### 3. Run locally
 
+
+### 3. Run locally
+```python
 python src/run.py
+```
 
 Browse to http://localhost:5000/ to open the demo UI.
 ### Running with Docker
@@ -79,13 +81,13 @@ The container starts the Flask app on 0.0.0.0:5000.
 
 ## Development notes
 
-    Hot‑reload – simply restart the python src/run.py process (Flask debug is on by default).
+* Hot‑reload – simply restart the python src/run.py process (Flask debug is on by default).
 
-    Logs – structured files under ./logs/, plus console output.
+* Logs – structured files under ./logs/, plus console output.
 
-    Uploads & temp files – saved to uploads/ and purged once the PDF has been processed.
+* Uploads & temp files – saved to uploads/ and purged once the PDF has been processed.
 
-    Extending parsers – add another DocumentProcessor subclass (e.g., WordProcessor) beside pdf_processor.py, then wire it in routes.py.
+* Extending parsers – add another DocumentProcessor subclass (e.g., WordProcessor) beside pdf_processor.py, then wire it in routes.py.
 
 ## CI / CD
 
