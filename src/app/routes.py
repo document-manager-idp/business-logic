@@ -175,6 +175,8 @@ def upload():
 
     response = db_upload(id, content)
 
+    logger.info(json.dumps(response, indent=4))
+
     return jsonify({"content": response}), 200
 
 @main_bp.route('/delete', methods=['DELETE'])
@@ -186,6 +188,8 @@ def delete():
     filename = data.get('filename')
 
     response = db_delete(id, filename)
+    
+    logger.info(json.dumps(response, indent=4))
 
     return jsonify({"content": response}), 200
 
@@ -199,6 +203,8 @@ def search():
 
     response = db_search(id, query)
 
+    logger.info(json.dumps(response, indent=4))
+
     return jsonify({"content": response}), 200
 
 @main_bp.route('/get-documents', methods=['GET'])
@@ -207,5 +213,10 @@ def get_documents():
     id = g.user.get('username', 'User')
 
     response = db_get_documents(id)
+
+    logger.info(json.dumps(response, indent=4))
+
+    if not response:
+        return jsonify({"message": "No documents found."}), 404
 
     return jsonify(response), 200
