@@ -214,6 +214,7 @@ def get_documents():
 
     response = db_get_documents(id)
 
+    logger.info("Documents fetched:")
     logger.info(json.dumps(response, indent=4))
 
     if not response:

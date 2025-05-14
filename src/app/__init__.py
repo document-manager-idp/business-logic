@@ -6,6 +6,7 @@ load_dotenv()
 
 def create_app(config_filename=None):
     app = Flask(__name__)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB, adjust as needed
 
     # Load configuration
     if config_filename:

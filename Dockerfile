@@ -1,4 +1,4 @@
-FROM downloads.unstructured.io/unstructured-io/unstructured:latest
+FROM downloads.unstructured.io/unstructured-io/unstructured:0.17.7-dev0
 
 # Set environment variable to ensure Python output is sent straight to terminal
 ENV PYTHONUNBUFFERED=1
