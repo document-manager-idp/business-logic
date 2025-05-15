@@ -43,7 +43,7 @@ def index():
       
       <!-- Search form -->
       <h1>Search</h1>
-      <form onsubmit="submitForm(event, '/api/search')" method="post">
+      <form onsubmit="submitForm(event, '/api/search')" method="get">
         <input type="text" name="query" placeholder="Enter query" required>
         <input type="submit" value="Search">
       </form>
@@ -71,12 +71,14 @@ def index():
           
           // Identify the message container based on the form url
           let messageDiv;
+          let method = 'POST';
           if (url === '/api/upload') {
             messageDiv = document.getElementById('upload-message');
           } else if (url === '/api/delete') {
             messageDiv = document.getElementById('delete-message');
           } else if (url === '/api/search') {
             messageDiv = document.getElementById('search-message');
+            method = 'GET';  // Search is a GET request
           } else {
             // Fallback generic message element
             messageDiv = document.getElementById('message');
@@ -84,7 +86,7 @@ def index():
           
           try {
             const response = await fetch(url, {
-              method: 'POST',
+              method,
               body: formData,
               headers: headers
             });

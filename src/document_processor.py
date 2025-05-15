@@ -191,7 +191,7 @@ class DocumentProcessor(ABC):
         table_text: str | None = None,
     ) -> dict[str, str | int]:
         return {
-            "id": get_id(self.url, chunk_number),
+            "id": get_id(self.filename, chunk_number),
             "text": " ".join(sentences),
             "url": self.url,
             "type": self.type,
