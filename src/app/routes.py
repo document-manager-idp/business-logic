@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, g, render_template
 from app.decorators import auth_route
 from app.db_client import *
 from app import metrics
-# from pdf_processor import PdfProcessor
+from pdf_processor import PdfProcessor
 from config import Config
 import json
 
