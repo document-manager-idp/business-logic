@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, g, render_template_string
 from app.decorators import auth_route, require_request_params
 from app.db_client import *
+from app import metrics
 from pdf_processor import PdfProcessor
 from config import Config
 import json
@@ -177,6 +178,11 @@ def upload():
 
     response = db_upload(id, content)
 
+    # business metric
+    metrics.PDF_UPLOAD_TOTAL.labels(
+        status="success" if response else "error"
+    ).inc()
+
     logger.info(json.dumps(response, indent=4))
 
     return jsonify({"content": response}), 200
@@ -190,6 +196,10 @@ def delete():
     filename = data.get('filename')
 
     response = db_delete(id, filename)
+
+    metrics.PDF_DELETE_TOTAL.labels(
+        status="success" if response else "error"
+    ).inc()
     
     logger.info(json.dumps(response, indent=4))
 
@@ -204,6 +214,10 @@ def search():
     query = data.get('query')
 
     response = db_search(id, query)
+
+    metrics.SEARCH_TOTAL.labels(
+        status="success" if response else "error"
+    ).inc()
 
     logger.info(json.dumps(response, indent=4))
 

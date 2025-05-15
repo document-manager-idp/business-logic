@@ -87,7 +87,10 @@ class PdfProcessor(DocumentProcessor):
                 sentences.extend(self._sentencize(element.text, element.metadata.page_number))
 
         # use the sentences to build text chunks
-        self.chunks.extend(self._split_sentences_into_chunks(sentences))
+        new_chunks = self._split_sentences_into_chunks(sentences)
+        self.chunks.extend(new_chunks)
+        from app import metrics
+        metrics.CHUNKS_CREATED_TOTAL.inc(len(new_chunks))
 
     def _get_table_chunks(self, table: Table) -> str:
         df = self._convert_table_to_dataframe(table)
