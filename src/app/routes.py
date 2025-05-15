@@ -207,13 +207,12 @@ def delete():
 
     return jsonify({"content": response}), 200
 
-@main_bp.route('/search', methods=['GET'])
+@main_bp.route('/search', methods=['POST'])
 @auth_route
 @require_request_params('query')
 def search():
-    data = request.get_json()
     id = g.user.get('username', 'User')
-    query = data.get('query')
+    query = request.form.get('query')
 
     response = db_search(id, query)
 
