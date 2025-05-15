@@ -220,6 +220,6 @@ def get_documents():
     logger.info(json.dumps(response, indent=4))
 
     if not response:
-        return jsonify({"message": "No documents found."}), 404
+        return jsonify({"documents": []}), 200
 
     return jsonify(response), 200
