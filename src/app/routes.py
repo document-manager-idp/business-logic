@@ -77,7 +77,6 @@ def index():
             messageDiv = document.getElementById('upload-message');
           } else if (url === '/api/delete') {
             messageDiv = document.getElementById('delete-message');
-            headers.append('Content-Type', 'application/json');
           } else if (url === '/api/search') {
             messageDiv = document.getElementById('search-message');
             method = 'GET';  // Search is a GET request
@@ -194,7 +193,10 @@ def upload():
 def delete():
     data = request.get_json()
     id = g.user.get('username', 'User')
-    filename = data.get('filename')
+    filename = request.form.get('filename')
+
+    if not filename:
+        return "No filename provided", 400
 
     response = db_delete(id, filename)
 
