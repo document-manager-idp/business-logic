@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document Manager</title>
+  <style>
+      :root{
+          --bg:#f7f9fc;
+          --card-bg:#fff;
+          --primary:#0d9488;
+          --primary-light:#14b8a6;
+          --border:#e5e7eb;
+          --text:#111827;
+          --radius:0.75rem;
+      }
+      *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
+      body{background:var(--bg);color:var(--text);}
+      .container{display:flex;gap:1.5rem;max-width:1200px;margin:auto;}
+      .sidebar{flex:0 0 240px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;height:calc(100vh - 2rem);overflow-y:auto;}
+      .sidebar h2{font-size:1.125rem;margin-bottom:0.75rem;}
+      .sidebar ul{list-style:none;}
+      .sidebar li{padding:0.5rem 0.25rem;border-bottom:1px solid var(--border);font-size:0.95rem;}
+      .sidebar li:last-child{border:none;}
+      .main{flex:1;display:flex;flex-direction:column;gap:1.5rem;}
+      .card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;box-shadow:0 1px 2px rgba(0,0,0,0.04);}
+      .card h2{font-size:1.125rem;margin-bottom:0.75rem;}
+      .card form{display:flex;gap:0.5rem;flex-wrap:wrap;}
+      input[type="text"],input[type="file"]{padding:0.5rem;border:1px solid var(--border);border-radius:var(--radius);flex:1 1 240px;}
+      input[type="submit"], .btn-primary{background:var(--primary);color:white;border:none;border-radius:var(--radius);padding:0.5rem 1rem;cursor:pointer;}
+      .btn-primary.logout-btn{background:transparent;color:var(--text);font-weight:600;}
+      .message{margin-top:0.5rem;font-weight:600;}
+      .error{color:#dc2626;}
+      .success{color:#059669;}
+      /* Search results */
+      #search-results-wrapper{max-height:350px;overflow-y:auto;}
+      .result-card{border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;margin-bottom:0.75rem;background:var(--bg);}
+      .result-card h3{font-size:1rem;margin-bottom:0.25rem;}
+      .result-card p{font-size:0.9rem;line-height:1.35rem;}
+
+      header{background:var(--card-bg);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+      header h1{font-weight:700;font-size:1.25rem;color:var(--primary);}
+      .user-actions{display:flex;align-items:center;gap:0.75rem;}
+      .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;text-transform:uppercase;}
+      .user-name{font-weight:600;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Document Manager</h1>
+  <div class="user-actions">
+    <div id="avatar" class="avatar">U</div>
+    <span id="user-name" class="user-name"></span>
+    <button id="logoutBtn" class="btn-primary logout-btn">Logout</button>
+  </div>
+</header>
+<div class="container">
+  <aside class="sidebar">
+    <h2>Your Documents</h2>
+    <div id="documents-list"><p>Loading…</p></div>
+  </aside>
+  <main class="main">
+    <section class="card">
+      <h2>Upload PDF</h2>
+      <form onsubmit="submitForm(event,'/api/upload')" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pdf">
+        <input type="submit" value="Upload">
+      </form>
+      <div id="upload-message" class="message"></div>
+    </section>
+    <section class="card">
+      <h2>Delete PDF</h2>
+      <form onsubmit="submitForm(event,'/api/delete')" method="post">
+        <input type="text" name="filename" placeholder="Enter filename" required>
+        <input type="submit" value="Delete">
+      </form>
+      <div id="delete-message" class="message"></div>
+    </section>
+    <section class="card">
+      <h2>Search</h2>
+      <form onsubmit="submitForm(event,'/api/search')" method="post">
+        <input type="text" name="query" placeholder="Enter query" required>
+        <input type="submit" value="Search">
+      </form>
+      <div id="search-message" class="message"></div>
+      <div id="search-results-wrapper">
+        <div id="search-results"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+    async function submitForm(event,url){
+        event.preventDefault();
+        const form=event.target;
+        const formData=new FormData(form);
+        const token=localStorage.getItem('cognitoToken');
+        const headers=new Headers();
+        if(token){headers.append('Authorization','Bearer '+token);}
+        try{
+            const response=await fetch(url,{method:'POST',body:formData,headers});
+            const isSearch=url==='\/api\/search';
+            const resultText=await response.text();
+            if(!response.ok){displayMessage(url,'error',resultText);return;}
+            displayMessage(url,'success','Ok');
+            if(isSearch){
+                let payload;try{payload=JSON.parse(resultText);}catch(e){payload={content:resultText};}
+                renderSearchResults(payload);
+            }else{loadDocuments();}
+        }catch(error){displayMessage(url,'error',error);}
+    }
+
+    function displayMessage(url,type,msg){
+        let targetId='';
+        if(url==='\/api\/upload')targetId='upload-message';
+        else if(url==='\/api\/delete')targetId='delete-message';
+        else if(url==='\/api\/search')targetId='search-message';
+        if(!targetId)return;
+        document.getElementById(targetId).innerHTML=`<span class="${type}">${msg}</span>`;
+    }
+
+    function renderSearchResults(data){
+        const wrapper=document.getElementById('search-results');
+        wrapper.innerHTML='';
+        if(!data||!data.content||data.content.length===0){wrapper.innerHTML='<p>No results</p>';return;}
+        (Array.isArray(data.content)?data.content:[data.content]).forEach((item,idx)=>{
+            const card=document.createElement('div');card.className='result-card';
+            const heading=document.createElement('h3');heading.textContent=item.filename?item.filename:'Result '+(idx+1);
+            const body=document.createElement('p');body.textContent=item.text?item.text:JSON.stringify(item).slice(0,300);
+            card.appendChild(heading);card.appendChild(body);wrapper.appendChild(card);
+        });
+    }
+
+    async function loadDocuments(){
+        const token=localStorage.getItem('cognitoToken');
+        const headers=new Headers();if(token){headers.append('Authorization','Bearer '+token);}
+        try{
+            const response=await fetch('/api/get-documents',{headers});
+            const listContainer=document.getElementById('documents-list');
+            if(!response.ok){listContainer.innerHTML='<p>Error loading</p>';return;}
+            const docs=await response.json();
+            if(!docs||docs.length===0){listContainer.innerHTML='<p>No documents.</p>';return;}
+            const ul=document.createElement('ul');docs.forEach(doc=>{const li=document.createElement('li');li.textContent=doc;ul.appendChild(li);});
+            listContainer.innerHTML='';listContainer.appendChild(ul);
+        }catch(e){document.getElementById('documents-list').innerHTML='<p>Error.</p>';}
+    }
+
+    function getInitials(name){
+        if(!name)return 'U';
+        const parts=name.trim().split(/\s+/);if(parts.length===1)return parts[0][0];
+        return (parts[0][0]+parts[parts.length-1][0]);
+    }
+
+    async function loadUserProfile(){
+        const token=localStorage.getItem('cognitoToken');
+        if(!token)return; // not logged in
+        const headers=new Headers({'Authorization':'Bearer '+token});
+        try{
+            const res=await fetch('/api/profile',{headers});
+            if(!res.ok)throw new Error('Profile fetch failed');
+            const profile=await res.json();
+            const name=profile.name||profile.username||'';
+            document.getElementById('user-name').textContent=name;
+            document.getElementById('avatar').textContent=getInitials(name);
+        }catch(err){console.error(err);}
+    }
+
+    window.addEventListener('load',()=>{loadDocuments();loadUserProfile();});
+</script>
+</body>
+</html>
