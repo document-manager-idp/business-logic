@@ -126,7 +126,13 @@
         (Array.isArray(data.content)?data.content:[data.content]).forEach((item,idx)=>{
             const card=document.createElement('div');card.className='result-card';
             const heading=document.createElement('h3');heading.textContent=item.filename?item.filename:'Result '+(idx+1);
-            const body=document.createElement('p');body.textContent=item.text?item.text:JSON.stringify(item).slice(0,300);
+            const result = {
+              score: item._score,
+              filename: item._source.filename,
+              page_number: item._source.page_number,
+              text: item._source.text,
+            }
+            const body=document.createElement('p');body.textContent=item.text?item.text:JSON.stringify(result, null, 4);
             card.appendChild(heading);card.appendChild(body);wrapper.appendChild(card);
         });
     }

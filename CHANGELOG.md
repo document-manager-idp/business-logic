@@ -93,8 +93,8 @@ The repository contains the declarative Kubernetes manifests that deploy the **D
 * **Kustomize** – Composition layer that stitches the individual manifests together
 
 #### Access points:
-| URL path | Backend service | Notes |
-|----------|-----------------|-------|
+| URL path | Backend service |
+|----------|-----------------|
 | `/auth` | **auth-service** on port 3000 |
 | `/api` | **business‑logic-service** on port 5000 |
 | `/dashboard` | **opensearch‑dashboards** on port 5601 |
