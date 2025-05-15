@@ -191,7 +191,6 @@ def upload():
 @auth_route
 @require_request_params('filename')
 def delete():
-    data = request.get_json()
     id = g.user.get('username', 'User')
     filename = request.form.get('filename')
 
