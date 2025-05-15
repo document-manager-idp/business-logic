@@ -77,6 +77,7 @@ def index():
             messageDiv = document.getElementById('upload-message');
           } else if (url === '/api/delete') {
             messageDiv = document.getElementById('delete-message');
+            headers.append('Content-Type', 'application/json');
           } else if (url === '/api/search') {
             messageDiv = document.getElementById('search-message');
             method = 'GET';  // Search is a GET request
