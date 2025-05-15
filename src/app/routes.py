@@ -187,7 +187,7 @@ def upload():
 
     return jsonify({"content": response}), 200
 
-@main_bp.route('/delete', methods=['DELETE'])
+@main_bp.route('/delete', methods=['POST'])
 @auth_route
 @require_request_params('filename')
 def delete():
