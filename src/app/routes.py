@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, g, render_template
-from app.decorators import auth_route, require_request_params
+from app.decorators import auth_route
 from app.db_client import *
 from app import metrics
-from pdf_processor import PdfProcessor
+# from pdf_processor import PdfProcessor
 from config import Config
 import json
 
@@ -10,7 +10,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/', methods=['GET'])
 def index():
-    return render_template("../templates/index.html")
+    return render_template("index.html")
 
 @main_bp.route('/upload', methods=['POST'])
 @auth_route
