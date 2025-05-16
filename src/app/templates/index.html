@@ -132,8 +132,14 @@
               page_number: item._source.page_number,
               text: item._source.text,
             }
-            const body=document.createElement('p');body.textContent=item.text?item.text:JSON.stringify(result, null, 4);
-            card.appendChild(heading);card.appendChild(body);wrapper.appendChild(card);
+            const body1=document.createElement('p');body1.textContent="Score: "+result.score;
+            const body2=document.createElement('p');body2.textContent="Filename: "+result.filename;
+            const body3=document.createElement('p');body3.textContent="Page Number: "+result.page_number;
+            const body4=document.createElement('p');body4.textContent="Text: "+result.text;
+            
+            card.appendChild(heading);
+            card.appendChild(body1);card.appendChild(body2);card.appendChild(body3);card.appendChild(body4);
+            wrapper.appendChild(card);
         });
     }
 
